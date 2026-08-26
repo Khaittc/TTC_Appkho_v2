@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ListTree, Users, Tags, FileText, Plus, Trash2, FolderKanban, Edit2, Briefcase, ToggleLeft, ToggleRight } from 'lucide-react';
+import { ListTree, Users, Tags, FileText, Plus, Trash2, FolderKanban, Pencil, Briefcase, ToggleLeft, ToggleRight } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Category, Unit, Supplier, Project, Brand, Item } from '../types';
 import { getDataProvider } from '../data/repositoryFactory';
@@ -410,7 +410,7 @@ export function MasterData() {
               <tr>
                 <th className="px-6 py-4 font-medium">Tên nhóm</th>
                 <th className="px-6 py-4 font-medium">Mô tả</th>
-                {canEdit && <th className="px-6 py-4 font-medium w-24">Thao tác</th>}
+                {canEdit && <th className="px-6 py-4 font-medium w-28 text-center">Thao tác</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200">
@@ -420,9 +420,16 @@ export function MasterData() {
                   <td className="px-6 py-4 text-slate-500">{c.description}</td>
                   {canEdit && (
                     <td className="px-6 py-4">
-                      <button onClick={() => handleDelete('categories', c.id)} className="text-red-500 hover:text-red-700">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <div className="flex items-center justify-center gap-1">
+                        <button 
+                          onClick={() => handleDelete('categories', c.id)} 
+                          className="p-2 rounded-md text-red-500 hover:text-red-700 hover:bg-red-50 transition-colors"
+                          title="Xóa"
+                          aria-label="Xóa"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   )}
                 </tr>
@@ -437,7 +444,7 @@ export function MasterData() {
             <thead className="bg-slate-50 border-b border-slate-200 text-slate-500">
               <tr>
                 <th className="px-6 py-4 font-medium">Tên đơn vị</th>
-                {canEdit && <th className="px-6 py-4 font-medium w-24">Thao tác</th>}
+                {canEdit && <th className="px-6 py-4 font-medium w-28 text-center">Thao tác</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200">
@@ -446,9 +453,16 @@ export function MasterData() {
                   <td className="px-6 py-4">{u.name}</td>
                   {canEdit && (
                     <td className="px-6 py-4">
-                      <button onClick={() => handleDelete('units', u.id)} className="text-red-500 hover:text-red-700">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <div className="flex items-center justify-center gap-1">
+                        <button 
+                          onClick={() => handleDelete('units', u.id)} 
+                          className="p-2 rounded-md text-red-500 hover:text-red-700 hover:bg-red-50 transition-colors"
+                          title="Xóa"
+                          aria-label="Xóa"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   )}
                 </tr>
@@ -466,7 +480,7 @@ export function MasterData() {
                 <th className="px-6 py-4 font-medium">Tên hãng</th>
                 <th className="px-6 py-4 font-medium">Tên gọi khác</th>
                 <th className="px-6 py-4 font-medium">Trạng thái</th>
-                {canEdit && <th className="px-6 py-4 font-medium w-24">Thao tác</th>}
+                {canEdit && <th className="px-6 py-4 font-medium w-28 text-center">Thao tác</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200">
@@ -482,13 +496,17 @@ export function MasterData() {
                   </td>
                   {canEdit && (
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center justify-center gap-1">
                         <button 
                           onClick={() => toggleBrandStatus(b)} 
-                          className={cn("hover:text-indigo-700", b.status === 'ACTIVE' ? 'text-green-600' : 'text-slate-400')}
+                          className={cn(
+                            "p-1.5 rounded-md hover:bg-slate-100 transition-colors", 
+                            b.status === 'ACTIVE' ? 'text-green-600' : 'text-slate-400'
+                          )}
                           title={b.status === 'ACTIVE' ? 'Vô hiệu hóa' : 'Kích hoạt'}
+                          aria-label={b.status === 'ACTIVE' ? 'Vô hiệu hóa' : 'Kích hoạt'}
                         >
-                          {b.status === 'ACTIVE' ? <ToggleRight className="w-6 h-6" /> : <ToggleLeft className="w-6 h-6" />}
+                          {b.status === 'ACTIVE' ? <ToggleRight className="w-5 h-5" /> : <ToggleLeft className="w-5 h-5" />}
                         </button>
                         <button
                           onClick={() => {
@@ -498,9 +516,11 @@ export function MasterData() {
                             setBrandAliases(b.aliases.join(', '));
                             setShowForm(true);
                           }}
-                          className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
+                          className="p-2 rounded-md text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 transition-colors"
+                          title="Sửa"
+                          aria-label="Sửa"
                         >
-                          Sửa
+                          <Pencil className="w-4 h-4" />
                         </button>
                       </div>
                     </td>
@@ -521,7 +541,7 @@ export function MasterData() {
                 <th className="px-6 py-4 font-medium">Liên hệ</th>
                 <th className="px-6 py-4 font-medium">Địa chỉ</th>
                 <th className="px-6 py-4 font-medium">Trạng thái</th>
-                {canEdit && <th className="px-6 py-4 font-medium w-24">Thao tác</th>}
+                {canEdit && <th className="px-6 py-4 font-medium w-28 text-center">Thao tác</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200">
@@ -543,13 +563,17 @@ export function MasterData() {
                   </td>
                   {canEdit && (
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center justify-center gap-1">
                         <button 
                           onClick={() => toggleSupplierStatus(s)} 
-                          className={cn("hover:text-indigo-700", s.status === 'ACTIVE' ? 'text-green-600' : 'text-slate-400')}
+                          className={cn(
+                            "p-1.5 rounded-md hover:bg-slate-100 transition-colors", 
+                            s.status === 'ACTIVE' ? 'text-green-600' : 'text-slate-400'
+                          )}
                           title={s.status === 'ACTIVE' ? 'Vô hiệu hóa' : 'Kích hoạt'}
+                          aria-label={s.status === 'ACTIVE' ? 'Vô hiệu hóa' : 'Kích hoạt'}
                         >
-                          {s.status === 'ACTIVE' ? <ToggleRight className="w-6 h-6" /> : <ToggleLeft className="w-6 h-6" />}
+                          {s.status === 'ACTIVE' ? <ToggleRight className="w-5 h-5" /> : <ToggleLeft className="w-5 h-5" />}
                         </button>
                         <button
                           onClick={() => {
@@ -564,9 +588,11 @@ export function MasterData() {
                             setSupNote(s.note || '');
                             setShowForm(true);
                           }}
-                          className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
+                          className="p-2 rounded-md text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 transition-colors"
+                          title="Sửa"
+                          aria-label="Sửa"
                         >
-                          Sửa
+                          <Pencil className="w-4 h-4" />
                         </button>
                       </div>
                     </td>
@@ -584,7 +610,7 @@ export function MasterData() {
               <tr>
                 <th className="px-6 py-4 font-medium">Mã DA</th>
                 <th className="px-6 py-4 font-medium">Tên dự án</th>
-                {canEdit && <th className="px-6 py-4 font-medium w-24">Thao tác</th>}
+                {canEdit && <th className="px-6 py-4 font-medium w-28 text-center">Thao tác</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200">
@@ -594,11 +620,21 @@ export function MasterData() {
                   <td className="px-6 py-4">{p.name}</td>
                   {canEdit && (
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <button onClick={() => { setEditingProject(p); setProjCode(p.code); setProjName(p.name); setShowForm(true); }} className="text-indigo-600 hover:text-indigo-900">
-                          <Edit2 className="w-4 h-4" />
+                      <div className="flex items-center justify-center gap-1">
+                        <button 
+                          onClick={() => { setEditingProject(p); setProjCode(p.code); setProjName(p.name); setShowForm(true); }} 
+                          className="p-2 rounded-md text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 transition-colors"
+                          title="Sửa"
+                          aria-label="Sửa"
+                        >
+                          <Pencil className="w-4 h-4" />
                         </button>
-                        <button onClick={() => handleDelete('projects', p.id)} className="text-red-500 hover:text-red-700">
+                        <button 
+                          onClick={() => handleDelete('projects', p.id)} 
+                          className="p-2 rounded-md text-red-500 hover:text-red-700 hover:bg-red-50 transition-colors"
+                          title="Xóa"
+                          aria-label="Xóa"
+                        >
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>

@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Package, Search, Plus, Filter, AlertTriangle, AlertCircle } from 'lucide-react';
+import { Package, Search, Plus, Filter, AlertTriangle, AlertCircle, Eye, FileDown, Upload } from 'lucide-react';
 import { Item, Category, Unit, Brand, Supplier } from '../types';
 import { getDataProvider } from '../data/repositoryFactory';
 import { useAuth } from '../context/AuthContext';
 import { ItemDetailModal } from '../components/ItemDetailModal';
 import { ExcelImportModal } from '../components/ExcelImportModal';
-import { FileDown, Upload } from 'lucide-react';
 
 export function Items() {
   const [items, setItems] = useState<Item[]>([]);
@@ -132,7 +131,7 @@ export function Items() {
                 <th className="px-6 py-4 font-medium text-right">Tồn kho</th>
                 <th className="px-6 py-4 font-medium">Đơn vị</th>
                 <th className="px-6 py-4 font-medium text-center">Trạng thái</th>
-                <th className="px-6 py-4 font-medium text-center">Chi tiết</th>
+                <th className="px-6 py-4 font-medium text-center w-24">Thao tác</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -160,12 +159,16 @@ export function Items() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-center">
-                      <button 
-                        onClick={() => openEditItem(item)}
-                        className="text-indigo-600 hover:text-indigo-900 font-medium px-3 py-1 rounded-md hover:bg-indigo-50 transition-colors"
-                      >
-                        Chi tiết
-                      </button>
+                      <div className="flex items-center justify-center gap-1">
+                        <button 
+                          onClick={() => openEditItem(item)}
+                          className="p-2 rounded-md text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 transition-colors"
+                          title="Xem chi tiết"
+                          aria-label="Xem chi tiết"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );
