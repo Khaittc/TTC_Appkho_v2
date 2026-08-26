@@ -1,11 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth, UserRole } from '../../context/AuthContext';
+import { useLocale } from '../../context/LocaleContext';
 import { IS_DEMO_MODE } from '../../config/env';
 import { getDataProvider } from '../../data/repositoryFactory';
 import { RefreshCw } from 'lucide-react';
 
 export function DemoBanner() {
   const { user, switchDemoRole } = useAuth();
+  const { locale, setLocale } = useLocale();
   const navigate = useNavigate();
 
   if (!IS_DEMO_MODE) return null;
@@ -40,6 +42,34 @@ export function DemoBanner() {
       </div>
 
       <div className="flex items-center gap-3 shrink-0">
+        {/* Language Switcher */}
+        <div className="flex items-center bg-amber-200/80 p-0.5 rounded-md border border-amber-300/80">
+          <button
+            type="button"
+            onClick={() => setLocale('vi')}
+            className={`px-2 py-0.5 rounded text-xs font-bold transition-colors ${
+              locale === 'vi'
+                ? 'bg-slate-900 text-white shadow-2xs'
+                : 'text-amber-950 hover:bg-amber-300/60'
+            }`}
+            title="Tiếng Việt"
+          >
+            VI
+          </button>
+          <button
+            type="button"
+            onClick={() => setLocale('en')}
+            className={`px-2 py-0.5 rounded text-xs font-bold transition-colors ${
+              locale === 'en'
+                ? 'bg-slate-900 text-white shadow-2xs'
+                : 'text-amber-950 hover:bg-amber-300/60'
+            }`}
+            title="English"
+          >
+            EN
+          </button>
+        </div>
+
         <div className="flex items-center gap-2">
           <label htmlFor="demo-role-select" className="text-amber-900 font-semibold whitespace-nowrap">
             Vai trò:

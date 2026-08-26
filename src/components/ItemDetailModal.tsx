@@ -5,6 +5,7 @@ import { Item, Category, Unit, Brand, Supplier, ItemSupplier } from '../types';
 import { getDataProvider } from '../data/repositoryFactory';
 import { useAuth } from '../context/AuthContext';
 import { useNotification } from '../context/NotificationContext';
+import { useLocale } from '../context/LocaleContext';
 import { normalizeModel, calculatePriceDifference, calculatePriceDifferencePercent } from '../domain/item/itemUtils';
 import { determinePreferredSupplier, getLowestActivePrice, processPriceUpdate, setPreferredStatus } from '../domain/item/itemSupplierService';
 
@@ -23,6 +24,7 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
   const { user } = useAuth();
   const provider = getDataProvider();
   const { success, error } = useNotification();
+  const { locale, t } = useLocale();
   
   const [activeTab, setActiveTab] = useState<'INFO' | 'STOCK' | 'SUPPLIERS'>('INFO');
   
@@ -56,6 +58,8 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
   const isEditing = !!item;
   const canEditCore = user?.role === 'ADMIN' || user?.role === 'MANAGER';
   const canEditSupplier = canEditCore;
+
+  const numberLocale = locale === 'vi' ? 'vi-VN' : 'en-US';
 
   useEffect(() => {
     if (isOpen) {
@@ -95,7 +99,7 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
     if (!canEditCore) return;
 
     if (!model.trim() || !brandId || !name.trim() || !categoryId || !unitId) {
-      error('Vui lòng điền đầy đủ các trường bắt buộc');
+      error(locale === 'vi' ? 'Vui lòng điền đầy đủ các trường bắt buộc' : 'Please fill in all required fields');
       return;
     }
 
@@ -105,7 +109,7 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
     
     const duplicateModel = allItems.find(i => i.modelNormalized === normModel && i.brandId === brandId && i.id !== item?.id);
     if (duplicateModel) {
-      error('Model và Hãng này đã tồn tại trong hệ thống (kể cả Ngừng sử dụng)!'); return;
+      error(locale === 'vi' ? 'Model và Hãng này đã tồn tại trong hệ thống (kể cả Ngừng sử dụng)!' : 'This Model and Brand already exist in the system (including Inactive)!'); return;
     }
 
     const b = brands.find(x => x.id === brandId);
@@ -132,7 +136,7 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
 
     if (isEditing) {
       await provider.updateItem(item!.id, data);
-      success('Cập nhật thành công');
+      success(locale === 'vi' ? 'Cập nhật thành công' : 'Updated successfully');
     } else {
       await provider.addItem({
         ...data,
@@ -141,7 +145,7 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
         createdAt: new Date().toISOString(),
         createdBy: user!.uid
       });
-      success('Thêm mới thành công');
+      success(locale === 'vi' ? 'Thêm mới thành công' : 'Added successfully');
       onClose();
     }
   };
@@ -150,7 +154,7 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
     if (!canEditSupplier || !item) return;
     if (!newSupId) return;
     if (itemSuppliers.some(is => is.supplierId === newSupId)) {
-      error('Nhà cung cấp này đã được thêm cho vật tư.'); return;
+      error(locale === 'vi' ? 'Nhà cung cấp này đã được thêm cho vật tư.' : 'This supplier has already been added for this item.'); return;
     }
 
     const nPrice = Number(newPrice);
@@ -188,7 +192,7 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
   const submitPriceUpdate = async () => {
     if (!canEditSupplier || !editingPriceIsId) return;
     const n = Number(updatePriceValue);
-    if (n <= 0) { error('Giá mới phải lớn hơn 0'); return; }
+    if (n <= 0) { error(locale === 'vi' ? 'Giá mới phải lớn hơn 0' : 'New price must be greater than 0'); return; }
 
     const is = itemSuppliers.find(x => x.id === editingPriceIsId);
     if (!is) return;
@@ -213,13 +217,13 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-white shrink-0">
           <h2 className="text-lg font-bold text-slate-900">
-            {isEditing ? `Chi tiết vật tư: ${model}` : 'Thêm vật tư mới'}
+            {isEditing ? t('itemDetail.titleEdit', { model }) : t('itemDetail.titleNew')}
           </h2>
           <button 
             onClick={onClose} 
             className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
-            title="Đóng"
-            aria-label="Đóng"
+            title={t('common.close')}
+            aria-label={t('common.close')}
           >
             <X className="w-5 h-5" />
           </button>
@@ -228,15 +232,15 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
         {/* Tabs */}
         <div className="flex px-6 border-b border-slate-200 pt-3 space-x-6 shrink-0 bg-white">
           <button onClick={() => setActiveTab('INFO')} className={cn("pb-3 text-sm font-medium border-b-2 transition-colors flex items-center gap-2", activeTab === 'INFO' ? "border-indigo-600 text-indigo-600" : "border-transparent text-slate-500 hover:text-slate-700")}>
-            <Activity className="w-4 h-4" /> Thông tin chính
+            <Activity className="w-4 h-4" /> {t('itemDetail.tabInfo')}
           </button>
           {isEditing && (
             <>
               <button onClick={() => setActiveTab('STOCK')} className={cn("pb-3 text-sm font-medium border-b-2 transition-colors flex items-center gap-2", activeTab === 'STOCK' ? "border-indigo-600 text-indigo-600" : "border-transparent text-slate-500 hover:text-slate-700")}>
-                <Package className="w-4 h-4" /> Tồn kho
+                <Package className="w-4 h-4" /> {t('itemDetail.tabStock')}
               </button>
               <button onClick={() => setActiveTab('SUPPLIERS')} className={cn("pb-3 text-sm font-medium border-b-2 transition-colors flex items-center gap-2", activeTab === 'SUPPLIERS' ? "border-indigo-600 text-indigo-600" : "border-transparent text-slate-500 hover:text-slate-700")}>
-                <DollarSign className="w-4 h-4" /> Nhà cung cấp & Giá
+                <DollarSign className="w-4 h-4" /> {t('itemDetail.tabSuppliers')}
               </button>
             </>
           )}
@@ -249,96 +253,96 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
             <form id="item-form" onSubmit={handleSaveItem} className="space-y-6">
               
               <section className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
-                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">Thông tin định danh</h3>
+                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">{t('itemDetail.sectionIdentity')}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Model (Mã NSX) <span className="text-red-500">*</span></label>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">{t('itemDetail.model')} <span className="text-red-500">*</span></label>
                     <input type="text" value={model} onChange={e=>setModel(e.target.value)} required disabled={!canEditCore} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed min-h-[40px] transition-colors" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Hãng sản xuất <span className="text-red-500">*</span></label>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">{t('itemDetail.brand')} <span className="text-red-500">*</span></label>
                     <select value={brandId} onChange={e=>setBrandId(e.target.value)} required disabled={!canEditCore} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed min-h-[40px] transition-colors">
-                      <option value="">-- Chọn hãng --</option>
+                      <option value="">{t('itemDetail.selectBrand')}</option>
                       {brands.filter(b => b.status === 'ACTIVE' || b.id === brandId).map(b => (
                         <option key={b.id} value={b.id}>{b.name}</option>
                       ))}
                     </select>
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Tên vật tư <span className="text-red-500">*</span></label>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">{t('itemDetail.name')} <span className="text-red-500">*</span></label>
                     <input type="text" value={name} onChange={e=>setName(e.target.value)} required disabled={!canEditCore} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed min-h-[40px] transition-colors" />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Mô tả thêm</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">{t('itemDetail.description')}</label>
                     <textarea value={description} onChange={e=>setDescription(e.target.value)} disabled={!canEditCore} rows={2} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed transition-colors" />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Manufacturer Part Number (MPN)</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">{t('itemDetail.mpn')}</label>
                     <input type="text" value={manufacturerPartNumber} onChange={e=>setManufacturerPartNumber(e.target.value)} disabled={!canEditCore} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed min-h-[40px] transition-colors" />
                   </div>
                 </div>
               </section>
 
               <section className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
-                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">Phân loại</h3>
+                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">{t('itemDetail.sectionClassification')}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Nhóm hàng <span className="text-red-500">*</span></label>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">{t('itemDetail.category')} <span className="text-red-500">*</span></label>
                     <select value={categoryId} onChange={e=>setCategoryId(e.target.value)} required disabled={!canEditCore} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed min-h-[40px] transition-colors">
-                      <option value="">-- Chọn nhóm --</option>
+                      <option value="">{t('itemDetail.selectCategory')}</option>
                       {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Đơn vị tính <span className="text-red-500">*</span></label>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">{t('itemDetail.unit')} <span className="text-red-500">*</span></label>
                     <select value={unitId} onChange={e=>setUnitId(e.target.value)} required disabled={!canEditCore} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed min-h-[40px] transition-colors">
-                      <option value="">-- Chọn ĐVT --</option>
+                      <option value="">{t('itemDetail.selectUnit')}</option>
                       {units.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Loại vật tư <span className="text-red-500">*</span></label>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">{t('itemDetail.type')} <span className="text-red-500">*</span></label>
                     <select value={itemType} onChange={e=>setItemType(e.target.value as any)} required disabled={!canEditCore} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed min-h-[40px] transition-colors">
-                      <option value="STANDARD">Vật tư chuẩn</option>
-                      <option value="PROJECT_SPECIFIC">Vật tư đặc thù dự án</option>
-                      <option value="CONSUMABLE">Vật tư tiêu hao</option>
-                      <option value="SPARE_PART">Phụ tùng dự phòng</option>
+                      <option value="STANDARD">{t('itemDetail.typeStandard')}</option>
+                      <option value="PROJECT_SPECIFIC">{t('itemDetail.typeProject')}</option>
+                      <option value="CONSUMABLE">{t('itemDetail.typeConsumable')}</option>
+                      <option value="SPARE_PART">{t('itemDetail.typeSparePart')}</option>
                     </select>
                   </div>
                 </div>
               </section>
 
               <section className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
-                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">Tồn kho & Kỹ thuật</h3>
+                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">{t('itemDetail.sectionStockTech')}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Tồn kho an toàn (Safety Stock)</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">{t('itemDetail.safetyStock')}</label>
                     <input type="number" min="0" value={safetyStock} onChange={e=>setSafetyStock(Number(e.target.value))} disabled={!canEditCore} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed min-h-[40px] transition-colors" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Datasheet URL</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">{t('itemDetail.datasheetUrl')}</label>
                     <input type="url" value={datasheetUrl} onChange={e=>setDatasheetUrl(e.target.value)} disabled={!canEditCore} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed min-h-[40px] transition-colors" placeholder="https://" />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Ghi chú kỹ thuật</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">{t('itemDetail.technicalNote')}</label>
                     <textarea value={technicalNote} onChange={e=>setTechnicalNote(e.target.value)} disabled={!canEditCore} rows={2} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed transition-colors" />
                   </div>
                 </div>
               </section>
 
               <section className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
-                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">Trạng thái</h3>
+                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">{t('itemDetail.sectionStatus')}</h3>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Trạng thái sử dụng</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">{t('itemDetail.statusUsage')}</label>
                   <div className="flex gap-4">
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input type="radio" name="status" value="ACTIVE" checked={status === 'ACTIVE'} onChange={()=>setStatus('ACTIVE')} disabled={!canEditCore} className="text-indigo-600 focus:ring-indigo-500" />
-                      <span className="text-sm font-medium text-slate-700">Đang sử dụng (ACTIVE)</span>
+                      <span className="text-sm font-medium text-slate-700">{t('common.active')}</span>
                     </label>
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input type="radio" name="status" value="INACTIVE" checked={status === 'INACTIVE'} onChange={()=>setStatus('INACTIVE')} disabled={!canEditCore} className="text-indigo-600 focus:ring-indigo-500" />
-                      <span className="text-sm font-medium text-slate-700">Ngừng sử dụng (INACTIVE)</span>
+                      <span className="text-sm font-medium text-slate-700">{t('common.inactive')}</span>
                     </label>
                   </div>
                 </div>
@@ -351,16 +355,16 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
             <div className="space-y-6">
               <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-xs flex items-center justify-between">
                 <div>
-                  <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Tồn kho hiện tại</p>
+                  <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider">{t('itemDetail.currentStock')}</p>
                   <p className="text-4xl font-bold text-slate-900 mt-1">{item.currentStock} <span className="text-lg text-slate-500 font-normal">{item.unitName}</span></p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Tồn kho an toàn</p>
+                  <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider">{t('itemDetail.safetyStockLevel')}</p>
                   <p className="text-2xl font-semibold text-slate-700 mt-1">{item.safetyStock}</p>
                 </div>
               </div>
               <p className="text-sm text-slate-500 italic">
-                * Tồn kho thực tế chỉ được thay đổi thông qua các giao dịch Nhập / Xuất kho.
+                {t('itemDetail.stockNote')}
               </p>
             </div>
           )}
@@ -370,9 +374,9 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
               
               {canEditSupplier && (
                 <div className="flex justify-between items-center">
-                  <h3 className="font-semibold text-slate-800">Danh sách Nhà cung cấp</h3>
+                  <h3 className="font-semibold text-slate-800">{t('suppliers.listTitle')}</h3>
                   <button onClick={() => setShowAddSupplier(!showAddSupplier)} className="flex items-center gap-2 text-sm text-indigo-600 font-medium hover:bg-indigo-50 px-3 py-1.5 rounded-lg transition-colors">
-                    <Plus className="w-4 h-4" /> Thêm NCC
+                    <Plus className="w-4 h-4" /> {t('suppliers.addSupplier')}
                   </button>
                 </div>
               )}
@@ -380,28 +384,28 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
               {showAddSupplier && canEditSupplier && (
                 <div className="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 flex flex-wrap items-end gap-3">
                   <div className="flex-1 min-w-[200px]">
-                    <label className="block text-xs font-medium text-slate-700 mb-1">Nhà cung cấp <span className="text-red-500">*</span></label>
+                    <label className="block text-xs font-medium text-slate-700 mb-1">{t('suppliers.supplier')} <span className="text-red-500">*</span></label>
                     <select value={newSupId} onChange={e=>setNewSupId(e.target.value)} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-colors">
-                      <option value="">-- Chọn NCC (Active) --</option>
+                      <option value="">{t('suppliers.selectSupplierActive')}</option>
                       {suppliers.filter(s => s.status === 'ACTIVE').map(s => (
                         <option key={s.id} value={s.id}>{s.name}</option>
                       ))}
                     </select>
                   </div>
                   <div className="w-48">
-                    <label className="block text-xs font-medium text-slate-700 mb-1">Mã NCC đặt (Supplier Part)</label>
+                    <label className="block text-xs font-medium text-slate-700 mb-1">{t('suppliers.supplierPartNumber')}</label>
                     <input type="text" value={newSupPart} onChange={e=>setNewSupPart(e.target.value)} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-colors" />
                   </div>
                   <div className="w-36">
-                    <label className="block text-xs font-medium text-slate-700 mb-1">Giá báo (VND)</label>
+                    <label className="block text-xs font-medium text-slate-700 mb-1">{t('suppliers.currentPriceVnd')}</label>
                     <input type="number" min="0" value={newPrice} onChange={e=>setNewPrice(e.target.value ? Number(e.target.value) : '')} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-colors" />
                   </div>
                   <div className="w-36">
-                    <label className="block text-xs font-medium text-slate-700 mb-1">Ngày báo giá</label>
+                    <label className="block text-xs font-medium text-slate-700 mb-1">{t('suppliers.quoteDate')}</label>
                     <input type="date" value={newQuoteDate} onChange={e=>setNewQuoteDate(e.target.value)} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-colors" />
                   </div>
                   <button onClick={handleAddSupplier} disabled={!newSupId} className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 h-[38px] transition-colors">
-                    Thêm
+                    {t('common.add')}
                   </button>
                 </div>
               )}
@@ -410,18 +414,18 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
                 <div className="overflow-x-auto"><table className="w-full text-left text-sm min-w-[800px]">
                   <thead className="bg-slate-50 border-b border-slate-200 text-slate-500">
                     <tr>
-                      <th className="px-4 py-3 font-medium">Nhà cung cấp</th>
-                      <th className="px-4 py-3 font-medium">Part Number</th>
-                      <th className="px-4 py-3 font-medium text-right">Giá cũ</th>
-                      <th className="px-4 py-3 font-medium text-right">Giá mới (VND)</th>
-                      <th className="px-4 py-3 font-medium">Ngày báo giá</th>
-                      <th className="px-4 py-3 font-medium text-center">Tình trạng</th>
-                      <th className="px-4 py-3 font-medium text-center">Thao tác</th>
+                      <th className="px-4 py-3 font-medium">{t('suppliers.supplier')}</th>
+                      <th className="px-4 py-3 font-medium">{t('suppliers.partNumber')}</th>
+                      <th className="px-4 py-3 font-medium text-right">{t('suppliers.previousPrice')}</th>
+                      <th className="px-4 py-3 font-medium text-right">{t('suppliers.currentPriceVnd')}</th>
+                      <th className="px-4 py-3 font-medium">{t('suppliers.quoteDate')}</th>
+                      <th className="px-4 py-3 font-medium text-center">{t('suppliers.status')}</th>
+                      <th className="px-4 py-3 font-medium text-center">{t('suppliers.actions')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {itemSuppliers.length === 0 && (
-                      <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-500">Chưa có nhà cung cấp nào</td></tr>
+                      <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-500">{t('suppliers.noSuppliers')}</td></tr>
                     )}
                     {itemSuppliers.map(row => {
                       const sup = suppliers.find(s => s.id === row.supplierId);
@@ -432,52 +436,71 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
                           <td className="px-4 py-4">
                             <div className="font-medium text-slate-900 flex items-center gap-2">
                               {sup?.name || 'Unknown'}
-                              {row.isPreferred && <span className="bg-yellow-100 text-yellow-800 text-[10px] px-2 py-0.5 rounded-full font-bold">PREFERRED</span>}
+                              {row.isPreferred && (
+                                <span className="bg-amber-100 text-amber-700 rounded-full text-[10px] font-semibold px-2 py-0.5">
+                                  {t('suppliers.preferredBadge')}
+                                </span>
+                              )}
                             </div>
                           </td>
                           <td className="px-4 py-4 text-slate-600 text-sm">
                             {row.supplierPartNumber || '--'}
                           </td>
                           <td className="px-4 py-4 text-right text-slate-500">
-                            <div>{row.previousPrice ? row.previousPrice.toLocaleString('vi-VN') : '--'}</div>
+                            <div>{row.previousPrice ? row.previousPrice.toLocaleString(numberLocale) : '--'}</div>
                           </td>
                           <td className="px-4 py-4 text-right">
                             <div className="font-semibold text-slate-900 flex flex-col items-end">
-                              {row.currentPrice ? row.currentPrice.toLocaleString('vi-VN') : '--'}
+                              {row.currentPrice ? row.currentPrice.toLocaleString(numberLocale) : '--'}
                               {row.currentPrice && row.previousPrice && (
                                 <div className={cn("text-xs mt-1 font-medium", row.currentPrice > row.previousPrice ? 'text-red-500' : 'text-green-500')}>
                                   {row.currentPrice > row.previousPrice ? '+' : ''}{calculatePriceDifferencePercent(row.currentPrice, row.previousPrice).toFixed(1)}%
                                 </div>
                               )}
                             </div>
-                            {isLowest && <div className="text-[10px] text-green-600 font-bold mt-1 text-right">GIÁ THẤP NHẤT</div>}
+                            {isLowest && <div className="text-[10px] text-green-600 font-semibold mt-1 text-right">{t('suppliers.lowestPriceBadge')}</div>}
                           </td>
                           <td className="px-4 py-4">
                              <div className="font-medium text-slate-800">
-                               {row.priceQuoteDate ? new Date(row.priceQuoteDate).toLocaleDateString('vi-VN') : '--'}
+                               {row.priceQuoteDate ? new Date(row.priceQuoteDate).toLocaleDateString(numberLocale) : '--'}
                              </div>
                              <div className="text-xs text-slate-400 mt-0.5">
-                               Cập nhật: {row.priceUpdatedAt ? new Date(row.priceUpdatedAt).toLocaleDateString('vi-VN') : '--'}
+                               {t('suppliers.updatedAt')}: {row.priceUpdatedAt ? new Date(row.priceUpdatedAt).toLocaleDateString(numberLocale) : '--'}
                              </div>
                           </td>
                           <td className="px-4 py-4 text-center">
                             <span className={cn("text-xs font-medium px-2 py-1 rounded-full", row.status === 'ACTIVE' ? "bg-green-100 text-green-700" : "bg-slate-200 text-slate-600")}>
-                              {row.status}
+                              {row.status === 'ACTIVE' ? t('common.active') : t('common.inactive')}
                             </span>
                           </td>
                           <td className="px-4 py-4">
                             {canEditSupplier && (
-                              <div className="flex items-center justify-center gap-3">
-                                <button onClick={() => setEditingPriceIsId(row.id)} className="text-indigo-600 hover:text-indigo-800 text-xs font-medium" disabled={row.status === 'INACTIVE'}>
-                                  Cập nhật giá
+                              <div className="flex items-center justify-center gap-2 flex-wrap">
+                                <button 
+                                  onClick={() => setEditingPriceIsId(row.id)} 
+                                  disabled={row.status === 'INACTIVE'}
+                                  className="text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                  {t('suppliers.updatePrice')}
                                 </button>
                                 {!row.isPreferred && row.status === 'ACTIVE' && (
-                                  <button onClick={() => setPreferredSupplier(row.id)} className="text-slate-500 hover:text-yellow-600 text-xs font-medium">
-                                    Set Preferred
+                                  <button 
+                                    onClick={() => setPreferredSupplier(row.id)} 
+                                    className="text-amber-700 bg-amber-50 hover:bg-amber-100 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors"
+                                  >
+                                    {t('suppliers.setPreferred')}
                                   </button>
                                 )}
-                                <button onClick={() => toggleSupplierStatus(row)} className={cn("text-xs font-medium", row.status === 'ACTIVE' ? "text-red-600 hover:text-red-800" : "text-green-600 hover:text-green-800")}>
-                                  {row.status === 'ACTIVE' ? 'Khóa' : 'Mở'}
+                                <button 
+                                  onClick={() => toggleSupplierStatus(row)} 
+                                  className={cn(
+                                    "px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors", 
+                                    row.status === 'ACTIVE' 
+                                      ? "text-red-600 bg-red-50 hover:bg-red-100" 
+                                      : "text-green-700 bg-green-50 hover:bg-green-100"
+                                  )}
+                                >
+                                  {row.status === 'ACTIVE' ? t('suppliers.lock') : t('suppliers.unlock')}
                                 </button>
                               </div>
                             )}
@@ -500,7 +523,7 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
             onClick={onClose} 
             className="px-4 py-2 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-lg text-sm font-medium transition-colors"
           >
-            Đóng
+            {t('common.close')}
           </button>
           {activeTab === 'INFO' && canEditCore && (
             <button 
@@ -508,7 +531,7 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
               type="submit" 
               className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors shadow-xs"
             >
-              <Save className="w-4 h-4" /> {isEditing ? 'Cập nhật' : 'Thêm mới'}
+              <Save className="w-4 h-4" /> {isEditing ? t('common.update') : t('common.addNew')}
             </button>
           )}
         </div>
@@ -518,11 +541,11 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
       {editingPriceIsId && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6 border border-slate-200">
-            <h3 className="text-base font-semibold text-slate-900 mb-4">Cập nhật giá</h3>
+            <h3 className="text-base font-semibold text-slate-900 mb-4">{t('priceModal.title')}</h3>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Giá mới (VND) <span className="text-red-500">*</span>
+                  {t('priceModal.newPriceVnd')} <span className="text-red-500">*</span>
                 </label>
                 <input 
                   type="number" 
@@ -535,7 +558,7 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Ngày báo giá <span className="text-red-500">*</span>
+                  {t('priceModal.quoteDate')} <span className="text-red-500">*</span>
                 </label>
                 <input 
                   type="date" 
@@ -553,12 +576,12 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
                   const pct = (diff / curr) * 100;
                   return (
                     <div className="bg-slate-50 p-3 rounded-lg text-sm border border-slate-200">
-                      <div className="flex justify-between mb-1 text-slate-600"><span>Giá hiện tại:</span> <span className="font-medium text-slate-900">{curr.toLocaleString('vi-VN')}</span></div>
-                      <div className="flex justify-between mb-1 text-slate-600"><span>Giá mới:</span> <span className="font-medium text-slate-900">{next.toLocaleString('vi-VN')}</span></div>
+                      <div className="flex justify-between mb-1 text-slate-600"><span>{t('priceModal.currentPrice')}:</span> <span className="font-medium text-slate-900">{curr.toLocaleString(numberLocale)}</span></div>
+                      <div className="flex justify-between mb-1 text-slate-600"><span>{t('priceModal.newPrice')}:</span> <span className="font-medium text-slate-900">{next.toLocaleString(numberLocale)}</span></div>
                       <div className="flex justify-between border-t border-slate-200 pt-1 mt-1 font-medium">
-                        <span className="text-slate-700">Chênh lệch:</span> 
+                        <span className="text-slate-700">{t('priceModal.difference')}:</span> 
                         <span className={diff > 0 ? 'text-red-500' : 'text-green-500'}>
-                          {diff > 0 ? '+' : ''}{diff.toLocaleString('vi-VN')} ({diff > 0 ? '+' : ''}{pct.toFixed(2)}%)
+                          {diff > 0 ? '+' : ''}{diff.toLocaleString(numberLocale)} ({diff > 0 ? '+' : ''}{pct.toFixed(2)}%)
                         </span>
                       </div>
                     </div>
@@ -573,7 +596,7 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
                 onClick={() => { setEditingPriceIsId(null); setUpdatePriceValue(''); }} 
                 className="px-4 py-2 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-lg text-sm font-medium transition-colors"
               >
-                Hủy
+                {t('common.cancel')}
               </button>
               <button 
                 type="button"
@@ -581,7 +604,7 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
                 disabled={!updatePriceValue} 
                 className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
               >
-                Lưu giá
+                {t('priceModal.savePrice')}
               </button>
             </div>
           </div>
