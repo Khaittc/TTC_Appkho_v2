@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Package, Search, Plus, Filter, AlertTriangle, AlertCircle, FileDown, Upload } from 'lucide-react';
+import { Package, Search, Plus, Filter, AlertTriangle, AlertCircle, FileDown, Upload, Eye, Pencil, Trash2 } from 'lucide-react';
 import { Item, Category, Unit, Brand, Supplier } from '../types';
 import { getDataProvider } from '../data/repositoryFactory';
 import { useAuth } from '../context/AuthContext';
 import { useLocale } from '../context/LocaleContext';
-import { ItemDetailModal } from '../components/ItemDetailModal';
+import { ItemDetailModal, ItemModalMode } from '../components/ItemDetailModal';
 import { ExcelImportModal } from '../components/ExcelImportModal';
 
 export function Items() {
@@ -20,7 +20,8 @@ export function Items() {
   const [filterStatus, setFilterStatus] = useState('');
 
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [itemModalMode, setItemModalMode] = useState<ItemModalMode>('VIEW');
+  const [itemModalOpen, setItemModalOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
 
   const provider = getDataProvider();
@@ -59,14 +60,22 @@ export function Items() {
     });
   }, [items, search, filterCat, filterBrand, filterStatus]);
 
-  const openNewItem = () => {
-    setSelectedItem(null);
-    setDrawerOpen(true);
+  const openViewItem = (item: Item) => {
+    setSelectedItem(item);
+    setItemModalMode('VIEW');
+    setItemModalOpen(true);
   };
 
   const openEditItem = (item: Item) => {
     setSelectedItem(item);
-    setDrawerOpen(true);
+    setItemModalMode('EDIT');
+    setItemModalOpen(true);
+  };
+
+  const openCreateItem = () => {
+    setSelectedItem(null);
+    setItemModalMode('CREATE');
+    setItemModalOpen(true);
   };
 
   return (
@@ -83,7 +92,7 @@ export function Items() {
             <span>{t('items.importExcel')}</span>
           </button>
           <button
-            onClick={openNewItem}
+            onClick={openCreateItem}
             className="flex items-center justify-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
           >
             <Plus className="w-5 h-5" />
@@ -133,7 +142,7 @@ export function Items() {
                 <th className="px-6 py-4 font-medium text-right">{t('items.colStock')}</th>
                 <th className="px-6 py-4 font-medium">{t('items.colUnit')}</th>
                 <th className="px-6 py-4 font-medium text-center">{t('items.colStatus')}</th>
-                <th className="px-6 py-4 font-medium text-center w-24">{t('items.colActions')}</th>
+                <th className="px-6 py-4 font-medium text-center w-28">{t('items.colActions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -161,13 +170,32 @@ export function Items() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-center">
-                      <div className="flex items-center justify-center">
+                      <div className="flex items-center justify-center gap-1">
                         <button 
-                          onClick={() => openEditItem(item)}
-                          className="text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 px-3 py-1.5 rounded-md text-sm font-medium transition-colors"
-                          title={t('common.viewDetails')}
+                          onClick={() => openViewItem(item)}
+                          className="p-1.5 rounded-md text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 transition-colors"
+                          title={t('common.view')}
+                          aria-label={t('common.view')}
                         >
-                          {t('common.viewDetails')}
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        {canEditCore && (
+                          <button 
+                            onClick={() => openEditItem(item)}
+                            className="p-1.5 rounded-md text-amber-600 hover:text-amber-800 hover:bg-amber-50 transition-colors"
+                            title={t('common.edit')}
+                            aria-label={t('common.edit')}
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </button>
+                        )}
+                        <button 
+                          disabled
+                          className="p-1.5 rounded-md text-slate-300 cursor-not-allowed opacity-60 transition-colors"
+                          title={t('items.deleteDisabledTooltip')}
+                          aria-label={t('items.deleteDisabledTooltip')}
+                        >
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </td>
@@ -193,8 +221,9 @@ export function Items() {
       <ExcelImportModal isOpen={importOpen} onClose={() => setImportOpen(false)} categories={categories} brands={brands} units={units} allItems={items} />
       <ItemDetailModal 
         item={selectedItem} 
-        isOpen={drawerOpen} 
-        onClose={() => setDrawerOpen(false)}
+        mode={itemModalMode}
+        isOpen={itemModalOpen} 
+        onClose={() => setItemModalOpen(false)}
         brands={brands}
         categories={categories}
         units={units}
