@@ -61,36 +61,56 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
 
   const numberLocale = locale === 'vi' ? 'vi-VN' : 'en-US';
 
+  // Effect A: Modal / Item initialization
   useEffect(() => {
-    if (isOpen) {
-      if (item) {
-                setModel(item.model);
-        setBrandId(item.brandId);
-        setName(item.name);
-        setDescription(item.description || '');
-        setManufacturerPartNumber(item.manufacturerPartNumber || '');
-        setCategoryId(item.categoryId);
-        setUnitId(item.unitId);
-        setItemType(item.itemType);
-        setSafetyStock(item.safetyStock);
-        setDatasheetUrl(item.datasheetUrl || '');
-        setTechnicalNote(item.technicalNote || '');
-        setStatus(item.status);
-        
-        provider.getItemSuppliers(item.id, setItemSuppliers);
-      } else {
-        // Auto SKU
-                
-        setModel(''); setBrandId(''); setName(''); setDescription(''); setManufacturerPartNumber('');
-        setCategoryId(''); setUnitId(''); setItemType('STANDARD'); setSafetyStock(0);
-        setDatasheetUrl(''); setTechnicalNote(''); setStatus('ACTIVE');
-        
-        setItemSuppliers([]);
-      }
-      setActiveTab('INFO');
-      setShowAddSupplier(false);
+    if (!isOpen) return;
+
+    if (item) {
+      setModel(item.model);
+      setBrandId(item.brandId);
+      setName(item.name);
+      setDescription(item.description || '');
+      setManufacturerPartNumber(item.manufacturerPartNumber || '');
+      setCategoryId(item.categoryId);
+      setUnitId(item.unitId);
+      setItemType(item.itemType);
+      setSafetyStock(item.safetyStock);
+      setDatasheetUrl(item.datasheetUrl || '');
+      setTechnicalNote(item.technicalNote || '');
+      setStatus(item.status);
+    } else {
+      setModel('');
+      setBrandId('');
+      setName('');
+      setDescription('');
+      setManufacturerPartNumber('');
+      setCategoryId('');
+      setUnitId('');
+      setItemType('STANDARD');
+      setSafetyStock(0);
+      setDatasheetUrl('');
+      setTechnicalNote('');
+      setStatus('ACTIVE');
     }
-  }, [isOpen, item, allItems]);
+
+    setActiveTab('INFO');
+    setShowAddSupplier(false);
+  }, [isOpen, item?.id]);
+
+  // Effect B: Item Supplier Subscription
+  useEffect(() => {
+    if (!isOpen || !item?.id) {
+      setItemSuppliers([]);
+      return;
+    }
+
+    const unsubscribe = provider.getItemSuppliers(item.id, setItemSuppliers);
+    return () => {
+      if (typeof unsubscribe === 'function') {
+        unsubscribe();
+      }
+    };
+  }, [isOpen, item?.id]);
 
   if (!isOpen) return null;
 
