@@ -1,0 +1,10 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // SECURITY: Demo mode enabled. 
+    // All read/write operations to the production database are strictly denied.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

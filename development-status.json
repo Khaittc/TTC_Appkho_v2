@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "currentModule": "1",
+  "modules": [
+    {
+      "id": "0",
+      "name": "Baseline Demo & Navigation",
+      "status": "ACCEPTED",
+      "checkpoint": "baseline-demo-stable",
+      "dependsOn": []
+    },
+    {
+      "id": "0.1",
+      "name": "Clean Baseline & Desktop Readiness",
+      "status": "ACCEPTED",
+      "checkpoint": "baseline-demo-stable",
+      "dependsOn": ["0"]
+    },
+    {
+      "id": "1",
+      "name": "Item Master + Master Data",
+      "status": "NEEDS_FIX",
+      "checkpoint": "item-master-v1",
+      "dependsOn": ["0.1"]
+    },
+    {
+      "id": "2",
+      "name": "Project Core",
+      "status": "BLOCKED",
+      "checkpoint": "project-core-v1",
+      "dependsOn": ["1"]
+    },
+    {
+      "id": "3",
+      "name": "BOM Management",
+      "status": "BLOCKED",
+      "checkpoint": "project-bom-v1",
+      "dependsOn": ["2"]
+    },
+    {
+      "id": "4",
+      "name": "Material Planning & Reservation",
+      "status": "BLOCKED",
+      "checkpoint": "material-planning-v1",
+      "dependsOn": ["3"]
+    },
+    {
+      "id": "5",
+      "name": "Purchasing theo Project",
+      "status": "BLOCKED",
+      "checkpoint": "project-procurement-v1",
+      "dependsOn": ["4"]
+    },
+    {
+      "id": "6",
+      "name": "Nhập hàng theo Project",
+      "status": "BLOCKED",
+      "checkpoint": "project-receiving-v1",
+      "dependsOn": ["5"]
+    },
+    {
+      "id": "7",
+      "name": "Xuất kho theo Project",
+      "status": "BLOCKED",
+      "checkpoint": "project-outbound-v1",
+      "dependsOn": ["6"]
+    },
+    {
+      "id": "8",
+      "name": "Giám sát vật tư dự án",
+      "status": "BLOCKED",
+      "checkpoint": "material-monitoring-v1",
+      "dependsOn": ["7"]
+    },
+    {
+      "id": "9",
+      "name": "Dashboard cấp quản lý",
+      "status": "BLOCKED",
+      "checkpoint": "management-dashboard-v1",
+      "dependsOn": ["8"]
+    },
+    {
+      "id": "10",
+      "name": "Transaction / Audit",
+      "status": "BLOCKED",
+      "checkpoint": "transaction-history-v2",
+      "dependsOn": ["7"]
+    },
+    {
+      "id": "11",
+      "name": "Permission Review",
+      "status": "BLOCKED",
+      "dependsOn": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+    },
+    {
+      "id": "12",
+      "name": "Production Backend + Electron Desktop",
+      "status": "BLOCKED",
+      "checkpoint": "desktop-production-v1",
+      "dependsOn": ["11"]
+    }
+  ]
+}

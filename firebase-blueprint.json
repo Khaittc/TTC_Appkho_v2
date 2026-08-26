@@ -1,0 +1,59 @@
+{
+  "collections": [
+    {
+      "name": "users",
+      "documentId": "uid",
+      "fields": [
+        { "name": "role", "type": "string" },
+        { "name": "email", "type": "string" },
+        { "name": "name", "type": "string" }
+      ]
+    },
+    {
+      "name": "items",
+      "documentId": "auto",
+      "fields": [
+        { "name": "sku", "type": "string" },
+        { "name": "name", "type": "string" },
+        { "name": "category", "type": "string" },
+        { "name": "currentStock", "type": "number" },
+        { "name": "safetyStock", "type": "number" },
+        { "name": "unit", "type": "string" }
+      ]
+    },
+    {
+      "name": "projects",
+      "documentId": "auto",
+      "fields": [
+        { "name": "code", "type": "string" },
+        { "name": "name", "type": "string" },
+        { "name": "status", "type": "string" }
+      ]
+    },
+    {
+      "name": "suppliers",
+      "documentId": "auto",
+      "fields": [
+        { "name": "code", "type": "string" },
+        { "name": "name", "type": "string" },
+        { "name": "contact", "type": "string" }
+      ]
+    },
+    {
+      "name": "transactions",
+      "documentId": "auto",
+      "fields": [
+        { "name": "type", "type": "string" },
+        { "name": "itemId", "type": "string" },
+        { "name": "itemSku", "type": "string" },
+        { "name": "itemName", "type": "string" },
+        { "name": "quantity", "type": "number" },
+        { "name": "projectId", "type": "string" },
+        { "name": "supplierId", "type": "string" },
+        { "name": "userId", "type": "string" },
+        { "name": "userName", "type": "string" },
+        { "name": "timestamp", "type": "timestamp" }
+      ]
+    }
+  ]
+}
