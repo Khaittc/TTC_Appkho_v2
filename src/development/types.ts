@@ -14,8 +14,19 @@ export interface RoadmapModule {
   dependsOn: string[];
 }
 
+export interface RoadmapUI {
+  id: string;
+  name: string;
+  status: DevelopmentStatus;
+  checkpoint?: string | null;
+  dependsOn: string[];
+  scope?: string[];
+}
+
 export interface DevelopmentStatusData {
   version: number;
   currentModule: string;
+  currentUI: string;
+  uiPrototype: RoadmapUI[];
   modules: RoadmapModule[];
 }

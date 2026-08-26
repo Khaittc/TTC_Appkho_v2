@@ -1,6 +1,218 @@
 {
-  "version": 1,
+  "version": 2,
   "currentModule": "1",
+  "currentUI": "05",
+  "uiPrototype": [
+    {
+      "id": "01",
+      "name": "App Shell & Navigation Foundation",
+      "status": "ACCEPTED",
+      "checkpoint": "ui-01-app-shell",
+      "dependsOn": [],
+      "scope": [
+        "App shell",
+        "Sidebar",
+        "Main content area",
+        "Demo environment presentation"
+      ]
+    },
+    {
+      "id": "02",
+      "name": "Common Actions & Interaction Standards",
+      "status": "ACCEPTED",
+      "checkpoint": "ui-02-common-actions",
+      "dependsOn": ["01"],
+      "scope": [
+        "Action icon standards",
+        "View / Edit / Delete presentation",
+        "Button interaction standards"
+      ]
+    },
+    {
+      "id": "03",
+      "name": "Forms, Modals & Common UI Foundation",
+      "status": "ACCEPTED",
+      "checkpoint": "ui-03-form-modal-foundation",
+      "dependsOn": ["02"],
+      "scope": [
+        "Centered modal",
+        "Form styles",
+        "Popup styles",
+        "VI / EN terminology foundation",
+        "Supplier price presentation foundation"
+      ]
+    },
+    {
+      "id": "04",
+      "name": "Item Catalog — View / Edit / Create Experience",
+      "status": "ACCEPTED",
+      "checkpoint": "ui-04-item-catalog",
+      "dependsOn": ["03"],
+      "scope": [
+        "Item List",
+        "Eye / View",
+        "Pencil / Edit",
+        "Create",
+        "Item Detail tabs",
+        "Inventory view",
+        "Supplier & Pricing view",
+        "Item VIEW polish"
+      ]
+    },
+    {
+      "id": "05",
+      "name": "System Master Data & Supplier Price Management",
+      "status": "ACTIVE",
+      "checkpoint": null,
+      "dependsOn": ["04"],
+      "scope": [
+        "Category",
+        "Unit",
+        "Brand",
+        "Supplier",
+        "Supplier View / Edit",
+        "Supplier-linked Items",
+        "Supplier Price List",
+        "Bulk Price Update UI",
+        "Excel Price Preview UI"
+      ]
+    },
+    {
+      "id": "06",
+      "name": "Project Management Experience",
+      "status": "BLOCKED",
+      "dependsOn": ["05"],
+      "scope": [
+        "Project List",
+        "Project View",
+        "Create / Edit",
+        "Project Detail",
+        "Project Material tabs"
+      ]
+    },
+    {
+      "id": "07",
+      "name": "Inbound / Receiving Experience",
+      "status": "BLOCKED",
+      "dependsOn": ["06"],
+      "scope": [
+        "Inbound List",
+        "Create Receipt",
+        "Supplier / Project selection",
+        "Add Items",
+        "Review",
+        "Confirmation"
+      ]
+    },
+    {
+      "id": "08",
+      "name": "Outbound / Issue Experience",
+      "status": "BLOCKED",
+      "dependsOn": ["07"],
+      "scope": [
+        "Outbound List",
+        "Project selection",
+        "Item selection",
+        "Stock availability",
+        "Review",
+        "Confirmation"
+      ]
+    },
+    {
+      "id": "09",
+      "name": "Transaction History Experience",
+      "status": "BLOCKED",
+      "dependsOn": ["08"],
+      "scope": [
+        "Transaction List",
+        "Search / Filter",
+        "Transaction Detail",
+        "Item / Project references"
+      ]
+    },
+    {
+      "id": "10",
+      "name": "Project Material Monitoring",
+      "status": "BLOCKED",
+      "dependsOn": ["09"],
+      "scope": [
+        "Project selector",
+        "Material status",
+        "Stock status",
+        "Shortage indication",
+        "Supply progress"
+      ]
+    },
+    {
+      "id": "11",
+      "name": "Management Dashboard",
+      "status": "BLOCKED",
+      "dependsOn": ["10"],
+      "scope": [
+        "Management KPIs",
+        "Inventory alerts",
+        "Project material KPIs",
+        "Recent activity"
+      ]
+    },
+    {
+      "id": "12",
+      "name": "User & Permission Management UI",
+      "status": "BLOCKED",
+      "dependsOn": ["11"],
+      "scope": [
+        "User List",
+        "Create / Edit User",
+        "Role presentation",
+        "Sidebar permission UI"
+      ]
+    },
+    {
+      "id": "13",
+      "name": "Global UX States & Responsive Polish",
+      "status": "BLOCKED",
+      "dependsOn": ["12"],
+      "scope": [
+        "Empty states",
+        "Loading states",
+        "Error states",
+        "Disabled states",
+        "Confirmation UI",
+        "Notifications",
+        "Responsive behavior"
+      ]
+    },
+    {
+      "id": "14",
+      "name": "End-to-End Clickable Prototype",
+      "status": "BLOCKED",
+      "dependsOn": ["13"],
+      "scope": [
+        "Master Data",
+        "Item",
+        "Supplier",
+        "Project",
+        "Inbound",
+        "Outbound",
+        "Transactions",
+        "Monitoring",
+        "Dashboard"
+      ]
+    },
+    {
+      "id": "15",
+      "name": "UI Acceptance & Prototype Freeze",
+      "status": "BLOCKED",
+      "checkpoint": "ui-prototype-v1",
+      "dependsOn": ["14"],
+      "scope": [
+        "Final UI acceptance",
+        "Regression review",
+        "Prototype freeze",
+        "Prepare Business Development handoff"
+      ]
+    }
+  ],
   "modules": [
     {
       "id": "0",
