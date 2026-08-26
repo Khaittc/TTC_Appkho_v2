@@ -244,34 +244,40 @@ export function ExcelImportModal({ isOpen, onClose, categories, brands, units, a
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm transition-opacity p-4">
-      <div className="w-full max-w-6xl bg-white max-h-[90vh] flex flex-col shadow-2xl animate-in fade-in zoom-in-95 duration-300 rounded-xl overflow-hidden">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
-          <h2 className="text-xl font-bold text-slate-800">Import vật tư từ Excel</h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors">
-            <X className="w-6 h-6" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
+      <div className="w-full max-w-6xl bg-white max-h-[90vh] flex flex-col shadow-2xl rounded-xl overflow-hidden border border-slate-200">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-white shrink-0">
+          <h2 className="text-lg font-bold text-slate-900">Import vật tư từ Excel</h2>
+          <button 
+            onClick={onClose} 
+            className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+            title="Đóng"
+            aria-label="Đóng"
+          >
+            <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="p-6 flex-1 overflow-y-auto bg-slate-50">
+        <div className="p-6 flex-1 overflow-y-auto bg-slate-50/50">
           {!file ? (
-            <div className="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-xl bg-white p-12 text-center">
+            <div className="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-xl bg-white p-12 text-center shadow-xs">
               <div className="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mb-4">
                 <Upload className="w-8 h-8" />
               </div>
-              <h3 className="text-lg font-semibold text-slate-800 mb-2">Tải lên file Excel</h3>
-              <p className="text-slate-500 mb-6 max-w-md">Kéo thả file .xlsx vào đây hoặc bấm nút chọn file để import dữ liệu vật tư hàng loạt vào hệ thống.</p>
+              <h3 className="text-base font-semibold text-slate-900 mb-2">Tải lên file Excel</h3>
+              <p className="text-slate-500 text-sm mb-6 max-w-md">Kéo thả file .xlsx vào đây hoặc bấm nút chọn file để import dữ liệu vật tư hàng loạt vào hệ thống.</p>
               
-              <div className="flex gap-4">
+              <div className="flex gap-3">
                 <button 
+                  type="button"
                   onClick={handleDownloadTemplate}
-                  className="flex items-center gap-2 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-2 rounded-lg font-medium"
+                  className="flex items-center gap-2 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                 >
                   <FileDown className="w-4 h-4" />
                   Tải file mẫu
                 </button>
                 
-                <label className="flex items-center gap-2 bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2 rounded-lg font-medium cursor-pointer">
+                <label className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium cursor-pointer transition-colors shadow-xs">
                   <Upload className="w-4 h-4" />
                   Chọn file
                   <input type="file" accept=".xlsx" className="hidden" ref={fileInputRef} onChange={handleFileChange} />
@@ -280,39 +286,39 @@ export function ExcelImportModal({ isOpen, onClose, categories, brands, units, a
             </div>
           ) : (
             <div className="space-y-6">
-              <div className="flex items-center justify-between bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+              <div className="flex items-center justify-between bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 bg-green-50 text-green-600 rounded-lg flex items-center justify-center">
                     <FileDown className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-slate-800">{file.name}</h3>
-                    <p className="text-sm text-slate-500">{(file.size / 1024).toFixed(1)} KB</p>
+                    <h3 className="text-sm font-semibold text-slate-900">{file.name}</h3>
+                    <p className="text-xs text-slate-500">{(file.size / 1024).toFixed(1)} KB</p>
                   </div>
                 </div>
-                <button onClick={resetState} className="text-sm text-slate-500 hover:text-slate-700">Chọn file khác</button>
+                <button type="button" onClick={resetState} className="text-xs font-medium text-indigo-600 hover:text-indigo-800">Chọn file khác</button>
               </div>
 
-              <div className="grid grid-cols-4 gap-4">
-                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm text-center">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs text-center">
                   <div className="text-2xl font-bold text-slate-800">{importSummary.total}</div>
-                  <div className="text-sm text-slate-500">Tổng dòng</div>
+                  <div className="text-xs font-medium text-slate-500 mt-1">Tổng dòng</div>
                 </div>
-                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm text-center">
+                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs text-center">
                   <div className="text-2xl font-bold text-green-600">{importSummary.valid}</div>
-                  <div className="text-sm text-slate-500">Hợp lệ</div>
+                  <div className="text-xs font-medium text-slate-500 mt-1">Hợp lệ</div>
                 </div>
-                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm text-center">
+                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs text-center">
                   <div className="text-2xl font-bold text-red-600">{importSummary.error}</div>
-                  <div className="text-sm text-slate-500">Lỗi</div>
+                  <div className="text-xs font-medium text-slate-500 mt-1">Lỗi</div>
                 </div>
-                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm text-center">
+                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs text-center">
                   <div className="text-2xl font-bold text-yellow-600">{importSummary.duplicate}</div>
-                  <div className="text-sm text-slate-500">Trùng Hãng+Model</div>
+                  <div className="text-xs font-medium text-slate-500 mt-1">Trùng Hãng+Model</div>
                 </div>
               </div>
 
-              <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+              <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
                 <div className="overflow-x-auto max-h-[400px]">
                   <table className="w-full text-left text-sm whitespace-nowrap">
                     <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 sticky top-0 z-10">
@@ -358,18 +364,19 @@ export function ExcelImportModal({ isOpen, onClose, categories, brands, units, a
           )}
         </div>
 
-        <div className="px-6 py-4 border-t border-slate-200 bg-white flex justify-end gap-3">
+        <div className="px-6 py-4 border-t border-slate-200 bg-white flex justify-end gap-2 shrink-0">
           <button 
             type="button" 
             onClick={onClose}
-            className="px-4 py-2 text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50"
+            className="px-4 py-2 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-lg text-sm font-medium transition-colors"
           >
             Đóng
           </button>
           <button 
+            type="button"
             onClick={handleImport}
             disabled={!file || importSummary.valid === 0 || isProcessing}
-            className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-xs"
           >
             {isProcessing ? 'Đang import...' : `Import ${importSummary.valid} vật tư hợp lệ`}
           </button>

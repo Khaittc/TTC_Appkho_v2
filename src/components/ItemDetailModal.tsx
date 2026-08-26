@@ -207,21 +207,26 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
   const minPrice = getLowestActivePrice(itemSuppliers);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="bg-white w-full max-w-6xl max-h-[90vh] rounded-xl shadow-2xl flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
+      <div className="bg-white w-full max-w-6xl max-h-[90vh] rounded-xl shadow-2xl flex flex-col overflow-hidden border border-slate-200">
         
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
-          <h2 className="text-xl font-bold text-slate-800">
+        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-white shrink-0">
+          <h2 className="text-lg font-bold text-slate-900">
             {isEditing ? `Chi tiết vật tư: ${model}` : 'Thêm vật tư mới'}
           </h2>
-          <button onClick={onClose} className="p-2 hover:bg-slate-200 rounded-full text-slate-500">
+          <button 
+            onClick={onClose} 
+            className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+            title="Đóng"
+            aria-label="Đóng"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex px-6 border-b border-slate-200 pt-4 space-x-6">
+        <div className="flex px-6 border-b border-slate-200 pt-3 space-x-6 shrink-0 bg-white">
           <button onClick={() => setActiveTab('INFO')} className={cn("pb-3 text-sm font-medium border-b-2 transition-colors flex items-center gap-2", activeTab === 'INFO' ? "border-indigo-600 text-indigo-600" : "border-transparent text-slate-500 hover:text-slate-700")}>
             <Activity className="w-4 h-4" /> Thông tin chính
           </button>
@@ -241,60 +246,60 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
         <div className="flex-1 overflow-y-auto p-6 bg-slate-50/50">
           
           {activeTab === 'INFO' && (
-            <form id="item-form" onSubmit={handleSaveItem} className="space-y-8">
+            <form id="item-form" onSubmit={handleSaveItem} className="space-y-6">
               
-              <section>
-                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4 border-b pb-2">Thông tin định danh</h3>
-                <div className="grid grid-cols-2 gap-4">
+              <section className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
+                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">Thông tin định danh</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Model (Mã NSX) <span className="text-red-500">*</span></label>
-                    <input type="text" value={model} onChange={e=>setModel(e.target.value)} required disabled={!canEditCore} className="w-full rounded-md border border-slate-300 px-3 py-2 disabled:bg-slate-100 min-h-[42px]" />
+                    <input type="text" value={model} onChange={e=>setModel(e.target.value)} required disabled={!canEditCore} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed min-h-[40px] transition-colors" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Hãng sản xuất <span className="text-red-500">*</span></label>
-                    <select value={brandId} onChange={e=>setBrandId(e.target.value)} required disabled={!canEditCore} className="w-full rounded-md border border-slate-300 px-3 py-2 disabled:bg-slate-100 min-h-[42px]">
+                    <select value={brandId} onChange={e=>setBrandId(e.target.value)} required disabled={!canEditCore} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed min-h-[40px] transition-colors">
                       <option value="">-- Chọn hãng --</option>
                       {brands.filter(b => b.status === 'ACTIVE' || b.id === brandId).map(b => (
                         <option key={b.id} value={b.id}>{b.name}</option>
                       ))}
                     </select>
                   </div>
-                  <div>
+                  <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-slate-700 mb-1">Tên vật tư <span className="text-red-500">*</span></label>
-                    <input type="text" value={name} onChange={e=>setName(e.target.value)} required disabled={!canEditCore} className="w-full rounded-md border border-slate-300 px-3 py-2 disabled:bg-slate-100 min-h-[42px]" />
+                    <input type="text" value={name} onChange={e=>setName(e.target.value)} required disabled={!canEditCore} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed min-h-[40px] transition-colors" />
                   </div>
-                  <div className="col-span-2">
+                  <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-slate-700 mb-1">Mô tả thêm</label>
-                    <textarea value={description} onChange={e=>setDescription(e.target.value)} disabled={!canEditCore} rows={2} className="w-full rounded-md border border-slate-300 px-3 py-2 disabled:bg-slate-100 min-h-[42px]" />
+                    <textarea value={description} onChange={e=>setDescription(e.target.value)} disabled={!canEditCore} rows={2} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed transition-colors" />
                   </div>
-                  <div className="col-span-2">
+                  <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-slate-700 mb-1">Manufacturer Part Number (MPN)</label>
-                    <input type="text" value={manufacturerPartNumber} onChange={e=>setManufacturerPartNumber(e.target.value)} disabled={!canEditCore} className="w-full rounded-md border border-slate-300 px-3 py-2 disabled:bg-slate-100 min-h-[42px]" />
+                    <input type="text" value={manufacturerPartNumber} onChange={e=>setManufacturerPartNumber(e.target.value)} disabled={!canEditCore} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed min-h-[40px] transition-colors" />
                   </div>
                 </div>
               </section>
 
-              <section>
-                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4 border-b pb-2">Phân loại</h3>
-                <div className="grid grid-cols-2 gap-4">
+              <section className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
+                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">Phân loại</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Nhóm hàng <span className="text-red-500">*</span></label>
-                    <select value={categoryId} onChange={e=>setCategoryId(e.target.value)} required disabled={!canEditCore} className="w-full rounded-md border border-slate-300 px-3 py-2 disabled:bg-slate-100 min-h-[42px]">
+                    <select value={categoryId} onChange={e=>setCategoryId(e.target.value)} required disabled={!canEditCore} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed min-h-[40px] transition-colors">
                       <option value="">-- Chọn nhóm --</option>
                       {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Đơn vị tính <span className="text-red-500">*</span></label>
-                    <select value={unitId} onChange={e=>setUnitId(e.target.value)} required disabled={!canEditCore} className="w-full rounded-md border border-slate-300 px-3 py-2 disabled:bg-slate-100 min-h-[42px]">
+                    <select value={unitId} onChange={e=>setUnitId(e.target.value)} required disabled={!canEditCore} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed min-h-[40px] transition-colors">
                       <option value="">-- Chọn ĐVT --</option>
                       {units.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
                     </select>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Loại vật tư <span className="text-red-500">*</span></label>
-                    <select value={itemType} onChange={e=>setItemType(e.target.value as any)} required disabled={!canEditCore} className="w-full rounded-md border border-slate-300 px-3 py-2 disabled:bg-slate-100 min-h-[42px]">
+                    <select value={itemType} onChange={e=>setItemType(e.target.value as any)} required disabled={!canEditCore} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed min-h-[40px] transition-colors">
                       <option value="STANDARD">Vật tư chuẩn</option>
                       <option value="PROJECT_SPECIFIC">Vật tư đặc thù dự án</option>
                       <option value="CONSUMABLE">Vật tư tiêu hao</option>
@@ -304,36 +309,36 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
                 </div>
               </section>
 
-              <section>
-                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4 border-b pb-2">Tồn kho & Kỹ thuật</h3>
-                <div className="grid grid-cols-2 gap-4">
+              <section className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
+                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">Tồn kho & Kỹ thuật</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Tồn kho an toàn (Safety Stock)</label>
-                    <input type="number" min="0" value={safetyStock} onChange={e=>setSafetyStock(Number(e.target.value))} disabled={!canEditCore} className="w-full rounded-md border border-slate-300 px-3 py-2 disabled:bg-slate-100 min-h-[42px]" />
+                    <input type="number" min="0" value={safetyStock} onChange={e=>setSafetyStock(Number(e.target.value))} disabled={!canEditCore} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed min-h-[40px] transition-colors" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Datasheet URL</label>
-                    <input type="url" value={datasheetUrl} onChange={e=>setDatasheetUrl(e.target.value)} disabled={!canEditCore} className="w-full rounded-md border border-slate-300 px-3 py-2 disabled:bg-slate-100 min-h-[42px]" placeholder="https://" />
+                    <input type="url" value={datasheetUrl} onChange={e=>setDatasheetUrl(e.target.value)} disabled={!canEditCore} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed min-h-[40px] transition-colors" placeholder="https://" />
                   </div>
-                  <div className="col-span-2">
+                  <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-slate-700 mb-1">Ghi chú kỹ thuật</label>
-                    <textarea value={technicalNote} onChange={e=>setTechnicalNote(e.target.value)} disabled={!canEditCore} rows={2} className="w-full rounded-md border border-slate-300 px-3 py-2 disabled:bg-slate-100 min-h-[42px]" />
+                    <textarea value={technicalNote} onChange={e=>setTechnicalNote(e.target.value)} disabled={!canEditCore} rows={2} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed transition-colors" />
                   </div>
                 </div>
               </section>
 
-              <section>
-                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4 border-b pb-2">Trạng thái</h3>
+              <section className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
+                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">Trạng thái</h3>
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">Trạng thái sử dụng</label>
                   <div className="flex gap-4">
-                    <label className="flex items-center gap-2">
-                      <input type="radio" name="status" value="ACTIVE" checked={status === 'ACTIVE'} onChange={()=>setStatus('ACTIVE')} disabled={!canEditCore} />
-                      <span className="text-sm">Đang sử dụng (ACTIVE)</span>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input type="radio" name="status" value="ACTIVE" checked={status === 'ACTIVE'} onChange={()=>setStatus('ACTIVE')} disabled={!canEditCore} className="text-indigo-600 focus:ring-indigo-500" />
+                      <span className="text-sm font-medium text-slate-700">Đang sử dụng (ACTIVE)</span>
                     </label>
-                    <label className="flex items-center gap-2">
-                      <input type="radio" name="status" value="INACTIVE" checked={status === 'INACTIVE'} onChange={()=>setStatus('INACTIVE')} disabled={!canEditCore} />
-                      <span className="text-sm">Ngừng sử dụng (INACTIVE)</span>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input type="radio" name="status" value="INACTIVE" checked={status === 'INACTIVE'} onChange={()=>setStatus('INACTIVE')} disabled={!canEditCore} className="text-indigo-600 focus:ring-indigo-500" />
+                      <span className="text-sm font-medium text-slate-700">Ngừng sử dụng (INACTIVE)</span>
                     </label>
                   </div>
                 </div>
@@ -344,13 +349,13 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
 
           {activeTab === 'STOCK' && item && (
             <div className="space-y-6">
-              <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+              <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-xs flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-500 font-medium uppercase tracking-wider">Tồn kho hiện tại</p>
+                  <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Tồn kho hiện tại</p>
                   <p className="text-4xl font-bold text-slate-900 mt-1">{item.currentStock} <span className="text-lg text-slate-500 font-normal">{item.unitName}</span></p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-slate-500 font-medium uppercase tracking-wider">Tồn kho an toàn</p>
+                  <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Tồn kho an toàn</p>
                   <p className="text-2xl font-semibold text-slate-700 mt-1">{item.safetyStock}</p>
                 </div>
               </div>
@@ -373,10 +378,10 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
               )}
 
               {showAddSupplier && canEditSupplier && (
-                <div className="bg-indigo-50/50 p-4 rounded-lg border border-indigo-100 flex items-end gap-3">
-                  <div className="flex-1">
-                    <label className="block text-xs font-medium text-slate-700 mb-1">Nhà cung cấp *</label>
-                    <select value={newSupId} onChange={e=>setNewSupId(e.target.value)} className="w-full rounded-md border-slate-300 text-sm">
+                <div className="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 flex flex-wrap items-end gap-3">
+                  <div className="flex-1 min-w-[200px]">
+                    <label className="block text-xs font-medium text-slate-700 mb-1">Nhà cung cấp <span className="text-red-500">*</span></label>
+                    <select value={newSupId} onChange={e=>setNewSupId(e.target.value)} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-colors">
                       <option value="">-- Chọn NCC (Active) --</option>
                       {suppliers.filter(s => s.status === 'ACTIVE').map(s => (
                         <option key={s.id} value={s.id}>{s.name}</option>
@@ -385,23 +390,23 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
                   </div>
                   <div className="w-48">
                     <label className="block text-xs font-medium text-slate-700 mb-1">Mã NCC đặt (Supplier Part)</label>
-                    <input type="text" value={newSupPart} onChange={e=>setNewSupPart(e.target.value)} className="w-full rounded-md border-slate-300 text-sm" />
+                    <input type="text" value={newSupPart} onChange={e=>setNewSupPart(e.target.value)} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-colors" />
                   </div>
-                  <div className="w-32">
+                  <div className="w-36">
                     <label className="block text-xs font-medium text-slate-700 mb-1">Giá báo (VND)</label>
-                    <input type="number" min="0" value={newPrice} onChange={e=>setNewPrice(e.target.value ? Number(e.target.value) : '')} className="w-full rounded-md border-slate-300 text-sm" />
+                    <input type="number" min="0" value={newPrice} onChange={e=>setNewPrice(e.target.value ? Number(e.target.value) : '')} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-colors" />
                   </div>
                   <div className="w-36">
                     <label className="block text-xs font-medium text-slate-700 mb-1">Ngày báo giá</label>
-                    <input type="date" value={newQuoteDate} onChange={e=>setNewQuoteDate(e.target.value)} className="w-full rounded-md border-slate-300 text-sm" />
+                    <input type="date" value={newQuoteDate} onChange={e=>setNewQuoteDate(e.target.value)} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-colors" />
                   </div>
-                  <button onClick={handleAddSupplier} disabled={!newSupId} className="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium disabled:opacity-50 h-9">
+                  <button onClick={handleAddSupplier} disabled={!newSupId} className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 h-[38px] transition-colors">
                     Thêm
                   </button>
                 </div>
               )}
 
-              <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+              <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
                 <div className="overflow-x-auto"><table className="w-full text-left text-sm min-w-[800px]">
                   <thead className="bg-slate-50 border-b border-slate-200 text-slate-500">
                     <tr>
@@ -416,7 +421,7 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {itemSuppliers.length === 0 && (
-                      <tr><td colSpan={5} className="px-4 py-8 text-center text-slate-500">Chưa có nhà cung cấp nào</td></tr>
+                      <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-500">Chưa có nhà cung cấp nào</td></tr>
                     )}
                     {itemSuppliers.map(row => {
                       const sup = suppliers.find(s => s.id === row.supplierId);
@@ -489,12 +494,20 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-slate-200 bg-white flex justify-end gap-3">
-          <button onClick={onClose} className="px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">
+        <div className="px-6 py-4 border-t border-slate-200 bg-white flex justify-end gap-2 shrink-0">
+          <button 
+            type="button"
+            onClick={onClose} 
+            className="px-4 py-2 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-lg text-sm font-medium transition-colors"
+          >
             Đóng
           </button>
           {activeTab === 'INFO' && canEditCore && (
-            <button form="item-form" type="submit" className="flex items-center gap-2 bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 font-medium transition-colors shadow-sm">
+            <button 
+              form="item-form" 
+              type="submit" 
+              className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors shadow-xs"
+            >
               <Save className="w-4 h-4" /> {isEditing ? 'Cập nhật' : 'Thêm mới'}
             </button>
           )}
@@ -503,17 +516,33 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
 
       {/* Price Update Modal */}
       {editingPriceIsId && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
-            <h3 className="text-lg font-bold mb-4">Cập nhật giá</h3>
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6 border border-slate-200">
+            <h3 className="text-base font-semibold text-slate-900 mb-4">Cập nhật giá</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Giá mới (VND)</label>
-                <input type="number" min="0" value={updatePriceValue} onChange={e=>setUpdatePriceValue(e.target.value ? Number(e.target.value) : '')} className="w-full rounded-md border-slate-300" autoFocus />
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Giá mới (VND) <span className="text-red-500">*</span>
+                </label>
+                <input 
+                  type="number" 
+                  min="0" 
+                  value={updatePriceValue} 
+                  onChange={e=>setUpdatePriceValue(e.target.value ? Number(e.target.value) : '')} 
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-colors" 
+                  autoFocus 
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Ngày báo giá</label>
-                <input type="date" value={updatePriceDate} onChange={e=>setUpdatePriceDate(e.target.value)} className="w-full rounded-md border-slate-300" />
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Ngày báo giá <span className="text-red-500">*</span>
+                </label>
+                <input 
+                  type="date" 
+                  value={updatePriceDate} 
+                  onChange={e=>setUpdatePriceDate(e.target.value)} 
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-colors" 
+                />
               </div>
               {updatePriceValue && (() => {
                 const is = itemSuppliers.find(x => x.id === editingPriceIsId);
@@ -523,24 +552,37 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
                   const diff = next - curr;
                   const pct = (diff / curr) * 100;
                   return (
-                    <div className="bg-slate-50 p-3 rounded-lg text-sm">
-                      <div className="flex justify-between mb-1"><span>Giá hiện tại:</span> <span className="font-medium">{curr.toLocaleString('vi-VN')}</span></div>
-                      <div className="flex justify-between mb-1"><span>Giá mới:</span> <span className="font-medium">{next.toLocaleString('vi-VN')}</span></div>
-                      <div className="flex justify-between border-t pt-1 mt-1 font-medium">
-                        <span>Chênh lệch:</span> 
+                    <div className="bg-slate-50 p-3 rounded-lg text-sm border border-slate-200">
+                      <div className="flex justify-between mb-1 text-slate-600"><span>Giá hiện tại:</span> <span className="font-medium text-slate-900">{curr.toLocaleString('vi-VN')}</span></div>
+                      <div className="flex justify-between mb-1 text-slate-600"><span>Giá mới:</span> <span className="font-medium text-slate-900">{next.toLocaleString('vi-VN')}</span></div>
+                      <div className="flex justify-between border-t border-slate-200 pt-1 mt-1 font-medium">
+                        <span className="text-slate-700">Chênh lệch:</span> 
                         <span className={diff > 0 ? 'text-red-500' : 'text-green-500'}>
                           {diff > 0 ? '+' : ''}{diff.toLocaleString('vi-VN')} ({diff > 0 ? '+' : ''}{pct.toFixed(2)}%)
                         </span>
                       </div>
                     </div>
-                );
+                  );
                 }
                 return null;
               })()}
             </div>
-            <div className="flex justify-end gap-3 mt-6">
-              <button onClick={() => { setEditingPriceIsId(null); setUpdatePriceValue(''); }} className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-md font-medium">Hủy</button>
-              <button onClick={submitPriceUpdate} disabled={!updatePriceValue} className="px-4 py-2 bg-indigo-600 text-white rounded-md font-medium disabled:opacity-50">Lưu giá</button>
+            <div className="flex justify-end gap-2 mt-6 pt-4 border-t border-slate-100">
+              <button 
+                type="button"
+                onClick={() => { setEditingPriceIsId(null); setUpdatePriceValue(''); }} 
+                className="px-4 py-2 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-lg text-sm font-medium transition-colors"
+              >
+                Hủy
+              </button>
+              <button 
+                type="button"
+                onClick={submitPriceUpdate} 
+                disabled={!updatePriceValue} 
+                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+              >
+                Lưu giá
+              </button>
             </div>
           </div>
         </div>
