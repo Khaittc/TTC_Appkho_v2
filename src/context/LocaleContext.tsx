@@ -99,7 +99,7 @@ export const translations = {
     'suppliers.updatePrice': 'Cập nhật giá',
     'suppliers.setPreferred': 'Đặt ưu tiên',
     'suppliers.lock': 'Khóa',
-    'suppliers.unlock': 'Mở',
+    'suppliers.unlock': 'Mở khóa',
     'suppliers.noSuppliers': 'Chưa có nhà cung cấp nào',
 
     // Price Update Modal
@@ -201,12 +201,12 @@ export const translations = {
     'suppliers.status': 'Status',
     'suppliers.actions': 'Actions',
     'suppliers.preferredBadge': 'Preferred',
-    'suppliers.lowestPriceBadge': 'Lowest Price',
-    'suppliers.updatePrice': 'Update Price',
-    'suppliers.setPreferred': 'Set Preferred',
+    'suppliers.lowestPriceBadge': 'Lowest price',
+    'suppliers.updatePrice': 'Update price',
+    'suppliers.setPreferred': 'Set preferred',
     'suppliers.lock': 'Lock',
     'suppliers.unlock': 'Unlock',
-    'suppliers.noSuppliers': 'No suppliers added yet',
+    'suppliers.noSuppliers': 'No suppliers yet',
 
     // Price Update Modal
     'priceModal.title': 'Update Price',

@@ -419,20 +419,19 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
                       <th className="px-4 py-3 font-medium text-right">{t('suppliers.previousPrice')}</th>
                       <th className="px-4 py-3 font-medium text-right">{t('suppliers.currentPriceVnd')}</th>
                       <th className="px-4 py-3 font-medium">{t('suppliers.quoteDate')}</th>
-                      <th className="px-4 py-3 font-medium text-center">{t('suppliers.status')}</th>
                       <th className="px-4 py-3 font-medium text-center">{t('suppliers.actions')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {itemSuppliers.length === 0 && (
-                      <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-500">{t('suppliers.noSuppliers')}</td></tr>
+                      <tr><td colSpan={6} className="px-4 py-8 text-center text-slate-500">{t('suppliers.noSuppliers')}</td></tr>
                     )}
                     {itemSuppliers.map(row => {
                       const sup = suppliers.find(s => s.id === row.supplierId);
                       const isLowest = row.status === 'ACTIVE' && row.currentPrice === minPrice && minPrice > 0;
                       
                       return (
-                        <tr key={row.id} className={cn(row.status === 'INACTIVE' && 'opacity-60 bg-slate-50')}>
+                        <tr key={row.id} className={cn(row.status === 'INACTIVE' && 'bg-slate-50/60')}>
                           <td className="px-4 py-4">
                             <div className="font-medium text-slate-900 flex items-center gap-2">
                               {sup?.name || 'Unknown'}
@@ -468,33 +467,37 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
                                {t('suppliers.updatedAt')}: {row.priceUpdatedAt ? new Date(row.priceUpdatedAt).toLocaleDateString(numberLocale) : '--'}
                              </div>
                           </td>
-                          <td className="px-4 py-4 text-center">
-                            <span className={cn("text-xs font-medium px-2 py-1 rounded-full", row.status === 'ACTIVE' ? "bg-green-100 text-green-700" : "bg-slate-200 text-slate-600")}>
-                              {row.status === 'ACTIVE' ? t('common.active') : t('common.inactive')}
-                            </span>
-                          </td>
                           <td className="px-4 py-4">
-                            {canEditSupplier && (
-                              <div className="flex items-center justify-center gap-2 flex-wrap">
+                            {canEditSupplier ? (
+                              <div className="grid grid-cols-3 gap-1.5 min-w-[280px]">
                                 <button 
                                   onClick={() => setEditingPriceIsId(row.id)} 
                                   disabled={row.status === 'INACTIVE'}
-                                  className="text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                  className={cn(
+                                    "h-8 px-2.5 rounded-md text-xs font-medium whitespace-nowrap flex items-center justify-center transition-colors",
+                                    row.status === 'ACTIVE'
+                                      ? "text-indigo-600 bg-indigo-50 hover:bg-indigo-100"
+                                      : "opacity-40 cursor-not-allowed bg-slate-100 text-slate-400"
+                                  )}
                                 >
                                   {t('suppliers.updatePrice')}
                                 </button>
-                                {!row.isPreferred && row.status === 'ACTIVE' && (
-                                  <button 
-                                    onClick={() => setPreferredSupplier(row.id)} 
-                                    className="text-amber-700 bg-amber-50 hover:bg-amber-100 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors"
-                                  >
-                                    {t('suppliers.setPreferred')}
-                                  </button>
-                                )}
+                                <button 
+                                  onClick={() => setPreferredSupplier(row.id)} 
+                                  disabled={row.isPreferred || row.status === 'INACTIVE'}
+                                  className={cn(
+                                    "h-8 px-2.5 rounded-md text-xs font-medium whitespace-nowrap flex items-center justify-center transition-colors",
+                                    (!row.isPreferred && row.status === 'ACTIVE')
+                                      ? "text-amber-700 bg-amber-50 hover:bg-amber-100"
+                                      : "bg-slate-100 text-slate-400 cursor-not-allowed opacity-60"
+                                  )}
+                                >
+                                  {t('suppliers.setPreferred')}
+                                </button>
                                 <button 
                                   onClick={() => toggleSupplierStatus(row)} 
                                   className={cn(
-                                    "px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors", 
+                                    "h-8 px-2.5 rounded-md text-xs font-medium whitespace-nowrap flex items-center justify-center transition-colors", 
                                     row.status === 'ACTIVE' 
                                       ? "text-red-600 bg-red-50 hover:bg-red-100" 
                                       : "text-green-700 bg-green-50 hover:bg-green-100"
@@ -503,6 +506,8 @@ export function ItemDetailModal({ item, isOpen, onClose, brands, categories, uni
                                   {row.status === 'ACTIVE' ? t('suppliers.lock') : t('suppliers.unlock')}
                                 </button>
                               </div>
+                            ) : (
+                              <div className="text-xs text-slate-400 text-center">--</div>
                             )}
                           </td>
                         </tr>
