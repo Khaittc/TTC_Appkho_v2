@@ -323,10 +323,12 @@ export function ItemDetailModal({ item, mode, isOpen, onClose, brands, categorie
                       <p className="text-xs font-medium text-slate-500">{t('itemDetail.name')}</p>
                       <p className="text-sm font-medium text-slate-900 break-words mt-0.5">{item.name || '--'}</p>
                     </div>
-                    <div>
-                      <p className="text-xs font-medium text-slate-500">{t('itemDetail.mpn')}</p>
-                      <p className="text-sm font-medium text-slate-900 break-words mt-0.5">{item.manufacturerPartNumber || '--'}</p>
-                    </div>
+                    {Boolean(item.manufacturerPartNumber?.trim()) && (
+                      <div>
+                        <p className="text-xs font-medium text-slate-500">{t('itemDetail.mpn')}</p>
+                        <p className="text-sm font-medium text-slate-900 break-words mt-0.5">{item.manufacturerPartNumber}</p>
+                      </div>
+                    )}
                     <div className="col-span-1 md:col-span-2">
                       <p className="text-xs font-medium text-slate-500">{t('itemDetail.description')}</p>
                       <p className="text-sm font-medium text-slate-700 whitespace-pre-wrap break-words mt-0.5">{item.description || '--'}</p>
